@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -24,25 +24,33 @@
                 <span asp-validation-for="RollNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+                <label asp-for="Fullname" class="control-label"></label>
+                <input asp-for="Fullname" class="form-control" />
+                <span asp-validation-for="Fullname" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control"></select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+           <div class="form-check">
+    <input type="radio" asp-for="Absent" class="form-check-input" value="true" checked="@Model.Absent" />
+    <label class="form-check-label">@Html.DisplayNameFor(model => model.Absent)</label>
+</div>
+<div class="form-check">
+    <input type="radio" asp-for="Present" class="form-check-input" value="true" checked="@Model.Present" />
+    <label class="form-check-label">@Html.DisplayNameFor(model => model.Present)</label>
+</div>
             <div class="form-group">
                 <label asp-for="Comment" class="control-label"></label>
                 <input asp-for="Comment" class="form-control" />
                 <span asp-validation-for="Comment" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
+            <div class="form-group col-md-12">
+    <label asp-for="Image" class="control-label">Thumbnail</label>
+    <div>
+        @if (!string.IsNullOrEmpty(Model.Image))
+        {
+            <img id="thumbnailImage" src="@Model.Image" alt="Thumbnail image" style="max-width: 50%;" />
+        }
+        <input type="file" asp-for="Image" class="form-control" onchange="displayThumbnail(this);" />
+    </div>
+</div
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -54,6 +62,23 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<script>
+    function displayThumbnail(input) {
+        var fileInput = input;
+        var thumbnailImage = document.getElementById('thumbnailImage');
+
+        if (fileInput.files && fileInput.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                thumbnailImage.src = e.target.result;
+                thumbnailImage.style.display = 'block';
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            thumbnailImage.src = '';
+            thumbnailImage.style.display = 'none';
+        }
+    }
+</script>

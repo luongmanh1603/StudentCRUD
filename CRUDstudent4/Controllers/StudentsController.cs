@@ -65,7 +65,7 @@ namespace CRUDstudent4.Controllers
                 // Xử lý tệp tin ảnh và lưu đường dẫn
                 if (image != null && image.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine("wwwroot", "img","student");
+                    var uploadsFolder = Path.Combine("wwwroot", "img", "student");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -108,34 +108,48 @@ namespace CRUDstudent4.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Group,RollNumber,FullName,Status,Comment,Image")] Student student)
+        public async Task<IActionResult> Edit(IFormFile image, Student model)
         {
-            if (id != student.Id)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+
+            if (true)
             {
-                try
+                // Kiểm tra xem trạng thái có thay đổi không và xử lý tương ứng
+                if (model.Present && !model.Absent)
                 {
-                    _context.Update(student);
-                    await _context.SaveChangesAsync();
+                    // Trạng thái Present được chọn
+                    model.Absent = false;
                 }
-                catch (DbUpdateConcurrencyException)
+                else if (!model.Present && model.Absent)
                 {
-                    if (!StudentExists(student.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    // Trạng thái Absent được chọn
+                    model.Present = false;
                 }
+                // Xử lý khi dữ liệu hợp lệ
+
+                // Xử lý tệp tin ảnh và lưu đường dẫn
+                if (image != null && image.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine("wwwroot", "img", "student");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + image.FileName);
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    // Lưu đường dẫn vào trường Thumbnail của mô hình
+                    model.Image = "/img/student/" + Path.GetFileName(imagePath);
+                }
+                _context.Update(model);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(student);
+            return View(model);
         }
 
         // GET: Students/Delete/5

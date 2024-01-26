@@ -9,119 +9,69 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<form id="attendanceForm">
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Group)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RollNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fullname)
+            </th>
+            <th>
+                Attendance Status
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Group)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.RollNumber)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FullName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Comment)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Image)
-                </th>
-                <th>Attendance</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Group)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.RollNumber)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FullName)
-                    </td>
-                    <td id="status_@item.Id">
-                        @Html.DisplayFor(modelItem => item.Status)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Comment)
-                    </td>
-                    <td>
-                        <img src="@item.Image" width="100" height="100" />
-                    </td>
-                    <td>
-                        <div>
-                            <input type="radio" id="present_@item.Id" name="attendance_@item.Id" value="Present" @(item.Status == CRUDstudent4.Models.AttendanceStatus.Present ? "checked" : "") />
-                            <label for="present_@item.Id">Present</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="absent_@item.Id" name="attendance_@item.Id" value="Absent" @(item.Status == CRUDstudent4.Models.AttendanceStatus.Absent ? "checked" : "") />
-                            <label for="absent_@item.Id">Absent</label>
-                        </div>
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <button type="button" id="saveAttendance">Save Attendance</button>
-</form>
-
-@section Scripts
-    {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var radioButtons = document.querySelectorAll('input[type="radio"]');
-            var saveButton = document.getElementById('saveAttendance');
-
-            radioButtons.forEach(function (radio) {
-                radio.addEventListener('change', function () {
-                    // Xử lý thay đổi trạng thái khi người dùng chọn radio button
-                    updateAttendance(this);
-                });
-            });
-
-            saveButton.addEventListener('click', function () {
-                // Xử lý lưu điểm danh khi người dùng nhấp vào nút Save
-                saveAttendance();
-            });
-
-            function updateAttendance(radio) {
-                var studentId = radio.id.split('_')[1];
-                var status = radio.value;
-
-                // Gọi AJAX để cập nhật trạng thái điểm danh
-                fetch(`/Students/UpdateAttendance?id=${studentId}&status=${status}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+                <td>
+                    @Html.DisplayFor(modelItem => item.Group)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RollNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fullname)
+                </td>
+                <td>
+                    @if (item.Absent)
+                    {
+                        <span class="text-danger">Absent</span>
                     }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Cập nhật hiển thị trạng thái trên trang
-                        document.getElementById(`status_${studentId}`).innerText = data.status;
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-
-            function saveAttendance() {
-                // Thực hiện các thao tác lưu điểm danh hoặc gửi dữ liệu điểm danh đến server
-                // Bạn có thể thêm logic xử lý ở đây
-                console.log("Attendance saved!");
-            }
-        });
-    </script>
-}
+                    else if (item.Present)
+                    {
+                        <span class="text-success">Present</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not Set</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comment)
+                </td>
+                <td>
+                    <img src="@item.Image" width="100" height="100" />
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

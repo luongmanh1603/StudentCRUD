@@ -23,16 +23,24 @@
             @Html.DisplayFor(model => model.RollNumber)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
+            @Html.DisplayNameFor(model => model.Fullname)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
+            @Html.DisplayFor(model => model.Fullname)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
+       
+        <dt class="col-sm-2">
+            Attendance Status
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+        <dd class="col-sm-10">
+            @if (Model.Absent)
+            {
+                <span class="status-absent">Absent</span>
+            }
+            else
+            {
+                <span class="status-present">Present</span>
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Comment)
@@ -40,11 +48,18 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Comment)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Image)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
+        <dd class="col-sm-10">
+            @if (!string.IsNullOrEmpty(Model.Image))
+            {
+                <img src="@Model.Image" alt="Student Image" style="max-width: 100%;" />
+            }
+            else
+            {
+                <span>No Image</span>
+            }
         </dd>
     </dl>
 </div>
@@ -52,3 +67,17 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+<style>
+    .student-image {
+        max-width: 50px; /* Kích thước tối đa của hình ảnh */
+        max-height: 50px;
+    }
+
+    .status-present {
+        color: green;
+    }
+
+    .status-absent {
+        color: red;
+    }
+ </style>
